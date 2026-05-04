@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VAIZO ─ V/ENTER 業種A ダイニングバー シード候補リスト</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box;
+      font-family: 'Helvetica Neue', 'Hiragino Kaku Gothic ProN', 'Yu Gothic', sans-serif;
+      word-break: normal; overflow-wrap: break-word; }
+  :root {
+    --c-white: #FFFFFF;
+    --c-black: #111111;
+    --c-gray:  #F5F5F5;
+    --c-orange:#E85D2F;
+    --c-text:  #111111;
+    --c-soft:  #2A2A2A;
+    --c-mute:  #555555;
+    --c-line:  #DCDCDC;
+  }
+  html { font-size: 16px; }
+  body { background: var(--c-white); color: var(--c-text);
+         font-weight: 500; line-height: 1.7;
+         -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 1200px; margin: 0 auto; padding: 64px 56px 96px; }
+
+  .hero { padding-bottom: 48px; border-bottom: 1px solid var(--c-line); margin-bottom: 56px; }
+  .eyebrow { font-size: 12px; color: var(--c-mute); letter-spacing: 6px;
+             font-weight: 700; text-transform: uppercase; }
+  .hero h1 { font-size: 36px; font-weight: 800; letter-spacing: -0.3px;
+             line-height: 1.4; margin-top: 20px; }
+  .hero .lead { font-size: 16px; line-height: 1.95; color: var(--c-soft);
+                margin-top: 24px; font-weight: 500; max-width: 880px; }
+  .hero .meta { font-size: 12px; color: var(--c-mute); letter-spacing: 1px;
+                margin-top: 20px; font-weight: 600; }
+
+  /* STATS GRID */
+  .stats { display: grid; grid-template-columns: repeat(4, 1fr);
+           gap: 16px; margin: 32px 0 48px; }
+  .stat { border: 1px solid var(--c-line); padding: 22px 24px; }
+  .stat .s-num { font-size: 32px; font-weight: 800;
+                 color: var(--c-orange); letter-spacing: -0.5px; line-height: 1.1; }
+  .stat .s-label { font-size: 12px; color: var(--c-mute);
+                   letter-spacing: 2px; font-weight: 700;
+                   margin-top: 6px; text-transform: uppercase; }
+  .stat .s-note { font-size: 12px; color: var(--c-soft);
+                  font-weight: 500; margin-top: 8px; line-height: 1.5; }
+
+  /* SECTIONS */
+  section { padding: 40px 0; border-bottom: 1px solid var(--c-line); }
+  section:last-of-type { border-bottom: none; }
+  section h2 { font-size: 22px; font-weight: 800; letter-spacing: -0.2px;
+               line-height: 1.4; margin-bottom: 8px; }
+  .h2-sub { font-size: 14px; color: var(--c-mute); font-weight: 600;
+            margin-bottom: 24px; line-height: 1.6; }
+
+  /* TABLES */
+  table { width: 100%; border-collapse: collapse;
+          margin-top: 8px; font-size: 14px; }
+  th, td { text-align: left; padding: 10px 12px;
+           border-bottom: 1px solid var(--c-line);
+           vertical-align: middle; line-height: 1.55; }
+  th { font-size: 10px; letter-spacing: 1.5px; color: var(--c-soft);
+       font-weight: 800; text-transform: uppercase; background: var(--c-gray);
+       white-space: nowrap; position: sticky; top: 0; }
+  td { color: var(--c-soft); font-weight: 500; }
+  td.shop-name { color: var(--c-text); font-weight: 700;
+                 white-space: nowrap; }
+  td.area { color: var(--c-mute); white-space: nowrap; font-size: 13px; }
+  td.center { text-align: center; }
+  td.kakuten { color: var(--c-text); font-weight: 700;
+               white-space: nowrap; font-size: 14px; }
+  td.notes { font-size: 12px; color: var(--c-mute); line-height: 1.5; }
+
+  /* ROW STATES */
+  tr.priority td { background: #FFF4ED; }
+  tr.priority td.shop-name::after {
+    content: "★最有力"; display: inline-block;
+    background: var(--c-orange); color: var(--c-white);
+    font-size: 9px; font-weight: 800; letter-spacing: 1px;
+    padding: 2px 6px; border-radius: 2px;
+    margin-left: 8px; vertical-align: middle;
+  }
+  tr.unverified td.shop-name::after {
+    content: "要確認"; display: inline-block;
+    background: var(--c-soft); color: var(--c-white);
+    font-size: 9px; font-weight: 700; letter-spacing: 1px;
+    padding: 2px 6px; border-radius: 2px;
+    margin-left: 8px; vertical-align: middle;
+  }
+  tr.has-site td { background: #F8F8F8; color: var(--c-mute); }
+  tr.has-site td.shop-name { color: var(--c-soft); }
+  tr.has-site td.shop-name::after {
+    content: "自社サイトあり"; display: inline-block;
+    background: var(--c-line); color: var(--c-soft);
+    font-size: 9px; font-weight: 700; letter-spacing: 1px;
+    padding: 2px 6px; border-radius: 2px;
+    margin-left: 8px; vertical-align: middle;
+  }
+  tr.excluded td { color: var(--c-mute); background: #FAFAFA; }
+  tr.excluded td.shop-name::after {
+    content: "除外"; display: inline-block;
+    background: var(--c-line); color: var(--c-mute);
+    font-size: 9px; font-weight: 700; letter-spacing: 1px;
+    padding: 2px 6px; border-radius: 2px;
+    margin-left: 8px; vertical-align: middle;
+  }
+
+  /* SITE STATUS */
+  .site-status { font-size: 12px; font-weight: 600; }
+  .site-none { color: var(--c-orange); font-weight: 800; }
+  .site-template { color: var(--c-orange); font-weight: 700; }
+  .site-yes { color: var(--c-mute); font-weight: 600; }
+  .site-chain { color: var(--c-mute); font-weight: 600; }
+
+  /* PRINCIPLES BOX */
+  .principles {
+    background: var(--c-text);
+    color: var(--c-white);
+    border-top: 4px solid var(--c-orange);
+    padding: 36px 40px;
+    margin: 32px 0 48px;
+  }
+  .principles .p-eyebrow { font-size: 11px; color: var(--c-orange);
+                            letter-spacing: 5px; font-weight: 800;
+                            margin-bottom: 14px; }
+  .principles h3 { font-size: 20px; font-weight: 800;
+                    line-height: 1.55; margin-bottom: 18px;
+                    color: var(--c-white); }
+  .principles ol { margin-left: 20px; font-size: 14px;
+                    line-height: 1.95; color: #CCCCCC; }
+  .principles ol li { margin-bottom: 6px; }
+  .principles strong { color: var(--c-white); }
+
+  /* NEXT STEPS */
+  .next {
+    background: var(--c-gray);
+    border-left: 5px solid var(--c-orange);
+    padding: 28px 32px;
+    margin-top: 24px;
+  }
+  .next .n-label {
+    font-size: 11px; letter-spacing: 5px;
+    color: var(--c-orange); font-weight: 800;
+    margin-bottom: 12px; display: block;
+  }
+  .next ul { margin-left: 20px; font-size: 15px;
+              line-height: 1.85; color: var(--c-text); font-weight: 600; }
+  .next ul li { margin-bottom: 6px; }
+
+  /* FOOT */
+  .foot { margin-top: 64px; padding-top: 28px; border-top: 1px solid var(--c-line);
+          font-size: 12px; color: var(--c-mute); letter-spacing: 0.5px;
+          line-height: 1.95; font-weight: 500; }
+  a { color: var(--c-orange); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="hero">
+    <div class="eyebrow">VAIZO ─ V/ENTER ／ 業種A シード候補</div>
+    <h1>高単価ダイニングバー（貸切メイン）<br>シード候補リスト v0.1</h1>
+    <p class="lead">
+      仙台中心部（国分町・一番町・立町・二日町・広瀬通・仙台駅周辺）の高単価ダイニングバー候補26件。「Googleマップ掲載・公式サイトなし／低品質テンプレのみ」を最優先候補（★最有力）に分類。手動Web調査の段階で、Phase 2の自動収集パイプラインで100件規模に拡張する前のシード。
+    </p>
+    <div class="meta">2026-05-04 v0.1 ／ 手動Web調査 ／ 002_営業部 / 02_営業運用 連携予定</div>
+  </header>
+
+  <div class="principles">
+    <div class="p-eyebrow">本リストの位置づけ</div>
+    <h3>これは Phase 1 シード（仕様検証用）。本実装は自動収集パイプライン後</h3>
+    <ol>
+      <li><strong>1ファイル原則</strong>を尊重し、最終データは V_ENTER_ターゲティング_運用シートにマージする想定（Drive再認証後）</li>
+      <li>本リストは「Googleマップ掲載・公式サイトなし／低品質テンプレ＝実質ノー公式サイト相当」を最優先で抽出した手動シード</li>
+      <li>店舗スコア50点の正式採点はまだ実施していない（軸K検索広告運用・軸G収益性等は要追加調査）</li>
+    </ol>
+  </div>
+
+  <div class="stats">
+    <div class="stat">
+      <div class="s-num">26</div>
+      <div class="s-label">候補総数</div>
+      <div class="s-note">手動Web調査で抽出</div>
+    </div>
+    <div class="stat">
+      <div class="s-num">6</div>
+      <div class="s-label">★最有力</div>
+      <div class="s-note">公式サイトなし or owst/ぐるなびテンプレのみ</div>
+    </div>
+    <div class="stat">
+      <div class="s-num">11</div>
+      <div class="s-label">要確認</div>
+      <div class="s-note">公式サイト未確認・要フェッチ</div>
+    </div>
+    <div class="stat">
+      <div class="s-num">9</div>
+      <div class="s-label">自社サイトあり</div>
+      <div class="s-note">既存サイトの古さ判定が必要（軸A）</div>
+    </div>
+  </div>
+
+  <section>
+    <h2>★最有力候補（公式サイトなし／低品質テンプレ）</h2>
+    <p class="h2-sub">業種Aのコア候補。owst.jp・ぐるなびサブドメインは「実質ノー公式サイト相当」として扱う</p>
+    <table>
+      <thead>
+        <tr>
+          <th>店舗名</th>
+          <th>エリア</th>
+          <th>業態</th>
+          <th>サイト状況</th>
+          <th>推定客単</th>
+          <th>個室／貸切</th>
+          <th>メモ</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="priority">
+          <td class="shop-name">大人たちの隠れ居酒屋 四葉</td>
+          <td class="area">国分町</td>
+          <td>隠れ家居酒屋</td>
+          <td class="site-status"><span class="site-template">owstテンプレ</span><br><span style="font-size:11px;color:var(--c-mute);">yotsuba.owst.jp</span></td>
+          <td class="kakuten">5,000-7,000</td>
+          <td>個室</td>
+          <td class="notes">接待・お忍びデート向け／owstテンプレで実質要刷新確定</td>
+        </tr>
+        <tr class="priority">
+          <td class="shop-name">ルリアン Le Lien（伊達マルシェ）</td>
+          <td class="area">国分町・広瀬通</td>
+          <td>創作料理ダイニング</td>
+          <td class="site-status"><span class="site-template">owst＋ぐるなび</span><br><span style="font-size:11px;color:var(--c-mute);">lelien1208.owst.jp / ta27601.gorp.jp</span></td>
+          <td class="kakuten">5,000-7,000</td>
+          <td>20-30名貸切</td>
+          <td class="notes">ウッドテイスト・隠れ家／20-30名貸切対応・大人デート向け</td>
+        </tr>
+        <tr class="priority">
+          <td class="shop-name">ARGENTO（アルジェント）</td>
+          <td class="area">国分町・勾当台公園駅3分</td>
+          <td>ワインバー＆ダイニング</td>
+          <td class="site-status"><span class="site-none">公式サイトなし</span><br><span style="font-size:11px;color:var(--c-mute);">t336200.gorp.jp（ぐるなびのみ）</span></td>
+          <td class="kakuten">5,000-10,000</td>
+          <td>不明</td>
+          <td class="notes">東北食材・ワイン450本以上の特化型／2F・隠れ家</td>
+        </tr>
+        <tr class="priority">
+          <td class="shop-name">月虹（GEKKO）</td>
+          <td class="area">国分町・EX PLAZA 4F</td>
+          <td>ダイニングバー</td>
+          <td class="site-status"><span class="site-none">公式サイトなし</span><br><span style="font-size:11px;color:var(--c-mute);">Retty・食べログのみ</span></td>
+          <td class="kakuten">4,000-6,000推定</td>
+          <td>不明</td>
+          <td class="notes">EX PLAZA 4F・空中階・要詳細確認</td>
+        </tr>
+        <tr class="priority">
+          <td class="shop-name">お箸タパス&お酒 ろ・び・ん</td>
+          <td class="area">国分町・勾当台公園</td>
+          <td>和バル・ダイニングバー</td>
+          <td class="site-status"><span class="site-none">公式サイトなし</span><br><span style="font-size:11px;color:var(--c-mute);">食べログ・ホットペッパー・Rettyのみ</span></td>
+          <td class="kakuten">4,000-6,000推定</td>
+          <td>カウンター</td>
+          <td class="notes">和タパス・箸スタイル／大人の時間が楽しめる和バル</td>
+        </tr>
+        <tr class="priority">
+          <td class="shop-name">本格イタリアン Arcadia 仙台国分町店</td>
+          <td class="area">国分町</td>
+          <td>本格イタリアン</td>
+          <td class="site-status"><span class="site-template">owstテンプレ</span><br><span style="font-size:11px;color:var(--c-mute);">akr0490832711.owst.jp</span></td>
+          <td class="kakuten">5,000-7,000推定</td>
+          <td>不明</td>
+          <td class="notes">owstテンプレ・実質要刷新候補／詳細確認要</td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section>
+    <h2>要確認候補（公式サイトの存在を直接フェッチで確認すべき）</h2>
+    <p class="h2-sub">食べログ・ヒトサラ・ホットペッパー等の集約サイトに掲載があり、公式サイト存在は未確認</p>
+    <table>
+      <thead>
+        <tr>
+          <th>店舗名</th>
+          <th>エリア</th>
+          <th>業態</th>
+          <th>主出典</th>
+          <th>推定客単</th>
+          <th>個室／貸切</th>
+          <th>メモ</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="unverified">
+          <td class="shop-name">BISTRO ENCORE（ビストロ アンコール）</td>
+          <td class="area">国分町・晩翠通り</td>
+          <td>ビストロ・フレンチ</td>
+          <td>ヒトサラ</td>
+          <td class="kakuten">5,000-8,000推定</td>
+          <td>2F個室あり</td>
+          <td class="notes">35歳独立・個人経営／Jazz・カウンター＋テーブル＋2F個室</td>
+        </tr>
+        <tr class="unverified">
+          <td class="shop-name">Bistro chasseur（ビストロ シャスール）</td>
+          <td class="area">国分町</td>
+          <td>ビストロ</td>
+          <td>ヒトサラ</td>
+          <td class="kakuten">5,000-7,000推定</td>
+          <td>不明</td>
+          <td class="notes">温かい色の灯り・落ち着いた空間</td>
+        </tr>
+        <tr class="unverified">
+          <td class="shop-name">BAR THE ROTHKO</td>
+          <td class="area">国分町</td>
+          <td>オーセンティックバー</td>
+          <td>ヒトサラ</td>
+          <td class="kakuten">5,000-8,000推定</td>
+          <td>不明</td>
+          <td class="notes">ジャズ・オーナー1人経営／ウィスキー豊富</td>
+        </tr>
+        <tr class="unverified">
+          <td class="shop-name">バー アルカンシェル</td>
+          <td class="area">国分町</td>
+          <td>オーセンティックバー</td>
+          <td>BAR-NAVI</td>
+          <td class="kakuten">5,000-8,000推定</td>
+          <td>不明</td>
+          <td class="notes">和洋融合・優美な雰囲気</td>
+        </tr>
+        <tr class="unverified">
+          <td class="shop-name">カーヴ</td>
+          <td class="area">国分町・稲荷小路</td>
+          <td>オーセンティックバー</td>
+          <td>BAR-NAVI</td>
+          <td class="kakuten">6,000-10,000推定</td>
+          <td>不明</td>
+          <td class="notes">1990年創業・100年松カウンター・希少シングルモルト</td>
+        </tr>
+        <tr class="unverified">
+          <td class="shop-name">酒場 門</td>
+          <td class="area">国分町</td>
+          <td>クラシックバー</td>
+          <td>記事のみ</td>
+          <td class="kakuten">3,000-5,000推定</td>
+          <td>不明</td>
+          <td class="notes">仙台最古級・昭和24年創業・ワンオペマスター（客単低め可能性）</td>
+        </tr>
+        <tr class="unverified">
+          <td class="shop-name">BAR ECXIA</td>
+          <td class="area">国分町・一番町</td>
+          <td>ダイニングバー</td>
+          <td>ヒトサラ</td>
+          <td class="kakuten">5,000-8,000推定</td>
+          <td>不明</td>
+          <td class="notes">ヒトサラ掲載・公式サイト要確認</td>
+        </tr>
+        <tr class="unverified">
+          <td class="shop-name">おはし二日町</td>
+          <td class="area">二日町・Bonds&R 2F</td>
+          <td>炭火焼き・和ダイニング</td>
+          <td>食べログ</td>
+          <td class="kakuten">5,000-7,000推定</td>
+          <td>不明</td>
+          <td class="notes">「上質な日常」コンセプト・宮城こだわり食材</td>
+        </tr>
+        <tr class="unverified">
+          <td class="shop-name">國酒 酉とも</td>
+          <td class="area">立町area</td>
+          <td>大人の隠れ家居酒屋</td>
+          <td>S-style特集</td>
+          <td class="kakuten">4,000-6,000推定</td>
+          <td>不明</td>
+          <td class="notes">大人向け隠れ家・要詳細確認</td>
+        </tr>
+        <tr class="unverified">
+          <td class="shop-name">飲み喰い処 玄孫</td>
+          <td class="area">立町area</td>
+          <td>隠れ家ダイニング</td>
+          <td>S-style特集</td>
+          <td class="kakuten">4,000-6,000推定</td>
+          <td>不明</td>
+          <td class="notes">大人向け隠れ家・要詳細確認</td>
+        </tr>
+        <tr class="unverified">
+          <td class="shop-name">飲み喰い処 伜</td>
+          <td class="area">立町area</td>
+          <td>隠れ家ダイニング</td>
+          <td>S-style特集</td>
+          <td class="kakuten">4,000-6,000推定</td>
+          <td>不明</td>
+          <td class="notes">大人向け隠れ家・要詳細確認</td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section>
+    <h2>自社サイトあり（軸A サイト技術成熟度の判定枠）</h2>
+    <p class="h2-sub">「公式サイトなし」基準では除外だが、サイトの古さ次第ではS級候補。軸AでHTML doctype・CMS世代等を機械判定</p>
+    <table>
+      <thead>
+        <tr>
+          <th>店舗名</th>
+          <th>エリア</th>
+          <th>業態</th>
+          <th>公式URL</th>
+          <th>推定客単</th>
+          <th>メモ</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="has-site">
+          <td class="shop-name">国分町 黒髙</td>
+          <td class="area">国分町</td>
+          <td>和ダイニング・完全個室</td>
+          <td><a href="https://www.kurotaka.website/" target="_blank">kurotaka.website</a></td>
+          <td class="kakuten">8,000+</td>
+          <td class="notes">完全個室・宮城沖天然フグ／2022年創業</td>
+        </tr>
+        <tr class="has-site">
+          <td class="shop-name">Cuocca（クオッカ）</td>
+          <td class="area">国分町・勾当台公園駅3分</td>
+          <td>イタリアン・フレンチ</td>
+          <td><a href="https://cuoca1015.com/" target="_blank">cuoca1015.com</a></td>
+          <td class="kakuten">8,500</td>
+          <td class="notes">2024年新オープン・カウンター＋個室</td>
+        </tr>
+        <tr class="has-site">
+          <td class="shop-name">nacrée（ナクレ）</td>
+          <td class="area">一番町・藤崎ファーストタワー4F</td>
+          <td>フレンチ（高級）</td>
+          <td><a href="https://nacree.jp/" target="_blank">nacree.jp</a></td>
+          <td class="kakuten">22,000（ディナー）</td>
+          <td class="notes">パリ・アストランス系シェフ・高級・別マーケットの可能性</td>
+        </tr>
+        <tr class="has-site">
+          <td class="shop-name">キザブロ</td>
+          <td class="area">国分町</td>
+          <td>イタリアン・ワインバー</td>
+          <td><a href="https://www.kizaburo.com/" target="_blank">kizaburo.com</a></td>
+          <td class="kakuten">5,000-8,000</td>
+          <td class="notes">記念日・デート向け・ソファ席10名貸切可</td>
+        </tr>
+        <tr class="has-site">
+          <td class="shop-name">仙台海蔵</td>
+          <td class="area">国分町</td>
+          <td>完全個室居酒屋</td>
+          <td><a href="https://www.sendai-umizo.com/room.html" target="_blank">sendai-umizo.com</a></td>
+          <td class="kakuten">4,000-6,000</td>
+          <td class="notes">完全個室特化・宴会対応</td>
+        </tr>
+        <tr class="has-site">
+          <td class="shop-name">Dream Home</td>
+          <td class="area">仙台駅</td>
+          <td>ダイニングバー・貸切</td>
+          <td><a href="https://www.dreamhome-sendai.jp/" target="_blank">dreamhome-sendai.jp</a></td>
+          <td class="kakuten">4,000-6,000</td>
+          <td class="notes">貸切女子会・宴会対応</td>
+        </tr>
+        <tr class="has-site">
+          <td class="shop-name">折衷Bar シヅクトウヤ</td>
+          <td class="area">国分町・仙台駅</td>
+          <td>ダイニングバー</td>
+          <td><a href="https://www.shizukuto-ya.com/" target="_blank">shizukuto-ya.com</a></td>
+          <td class="kakuten">5,000-7,000推定</td>
+          <td class="notes">折衷スタイル・要評価</td>
+        </tr>
+        <tr class="has-site">
+          <td class="shop-name">ITALIAN BAR JAPPS</td>
+          <td class="area">国分町</td>
+          <td>イタリアンバー</td>
+          <td><a href="https://italian-bar-japps.com/" target="_blank">italian-bar-japps.com</a></td>
+          <td class="kakuten">5,000-7,000推定</td>
+          <td class="notes">公式サイトあり・要評価</td>
+        </tr>
+        <tr class="has-site">
+          <td class="shop-name">Bar BARBE</td>
+          <td class="area">仙台市</td>
+          <td>ウィスキーバー</td>
+          <td><a href="https://barbe-miyagi.com/" target="_blank">barbe-miyagi.com</a></td>
+          <td class="kakuten">5,000-8,000推定</td>
+          <td class="notes">ウィスキー特化・要評価</td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section>
+    <h2>除外（チェーン・FC）</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>店舗名</th>
+          <th>業態</th>
+          <th>公式URL</th>
+          <th>除外理由</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="excluded">
+          <td class="shop-name">ウメ子の家 仙台駅前店</td>
+          <td>創作和食ダイニング</td>
+          <td>umeko.dkdining.com</td>
+          <td>DKチェーン系FC</td>
+        </tr>
+        <tr class="excluded">
+          <td class="shop-name">bar moon walk 国分町店</td>
+          <td>250円ダイニングバー</td>
+          <td>barmoonwalk.jp</td>
+          <td>全国チェーン（客単低・チェーン）</td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section>
+    <h2>次の即アクション</h2>
+    <div class="next">
+      <span class="n-label">PHASE 1 検証ステップ</span>
+      <ul>
+        <li>★最有力6件のサイト・Googleマップ・食べログを直接フェッチして詳細確認</li>
+        <li>要確認11件の公式サイト存在を1件ずつ検証（うち何件が実質ノー公式サイトか）</li>
+        <li>仙台中心部以外（東北・東京）に展開して100件規模に拡張するためのクロール仕様書作成</li>
+        <li>Drive再認証後、本リストを V_ENTER_ターゲティング_運用シート にマージ</li>
+        <li>CTO 櫻井に Google Maps Places API ＋ Wappalyzer 自動収集パイプライン実装依頼</li>
+      </ul>
+    </div>
+  </section>
+
+  <div class="foot">
+    関連：<a href="index.html">業種選定 経緯と判断軸 分析レポート</a>／<a href="targeting.html">ターゲティングの考え方</a>／<a href="data/dining-bar-seed.csv">CSV版（生データ）</a><br>
+    記録：Claude／橋本 友太郎　2026-05-04 v0.1（手動シード）
+  </div>
+
+</div>
+</body>
+</html>
