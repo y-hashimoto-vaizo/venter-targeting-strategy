@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VAIZO ─ V/ENTER 業種選定 経緯と判断軸</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box;
+      font-family: 'Helvetica Neue', 'Hiragino Kaku Gothic ProN', 'Yu Gothic', sans-serif;
+      word-break: normal; overflow-wrap: break-word; }
+  :root {
+    --c-white: #FFFFFF;
+    --c-black: #111111;
+    --c-gray:  #F5F5F5;
+    --c-orange:#E85D2F;
+    --c-text:  #111111;
+    --c-soft:  #2A2A2A;
+    --c-mute:  #555555;
+    --c-line:  #DCDCDC;
+  }
+  html { font-size: 16px; }
+  body { background: var(--c-white); color: var(--c-text);
+         font-weight: 500; line-height: 1.7;
+         -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 1040px; margin: 0 auto; padding: 80px 64px 120px; }
+
+  .hero { padding-bottom: 56px; border-bottom: 1px solid var(--c-line); margin-bottom: 56px; }
+  .eyebrow { font-size: 12px; color: var(--c-mute); letter-spacing: 6px;
+             font-weight: 700; text-transform: uppercase; }
+  .hero h1 { font-size: 40px; font-weight: 800; letter-spacing: -0.3px;
+             line-height: 1.4; margin-top: 24px; }
+  .hero .lead { font-size: 17px; line-height: 1.95; color: var(--c-soft);
+                margin-top: 28px; font-weight: 500; max-width: 880px; }
+  .hero .meta { font-size: 13px; color: var(--c-mute); letter-spacing: 1px;
+                margin-top: 24px; font-weight: 600; }
+
+  section { padding: 64px 0; border-bottom: 1px solid var(--c-line); }
+  section:last-of-type { border-bottom: none; }
+  .num { font-size: 13px; font-weight: 800; letter-spacing: 2px;
+         color: var(--c-orange); margin-bottom: 14px; display: inline-block; }
+  section h2 { font-size: 26px; font-weight: 800; letter-spacing: -0.3px;
+               line-height: 1.45; margin-bottom: 14px; }
+  .h2-sub { font-size: 15px; color: var(--c-mute); font-weight: 600;
+            margin-bottom: 36px; line-height: 1.7; }
+  section h3 { font-size: 17px; font-weight: 800; letter-spacing: 0.5px;
+               margin-top: 40px; margin-bottom: 16px;
+               padding-bottom: 10px; border-bottom: 1px solid var(--c-line); }
+
+  .body { font-size: 16px; line-height: 1.95; color: var(--c-soft);
+          font-weight: 500; max-width: 900px; margin-bottom: 14px; }
+  .body strong { color: var(--c-text); font-weight: 700; }
+  .body .accent { color: var(--c-orange); font-weight: 800; }
+
+  /* TIMELINE */
+  .timeline { position: relative; margin-top: 32px; padding-left: 28px; }
+  .timeline::before {
+    content: ''; position: absolute; left: 8px; top: 8px; bottom: 8px;
+    width: 2px; background: var(--c-line);
+  }
+  .tl-step { position: relative; padding-bottom: 32px; }
+  .tl-step::before {
+    content: ''; position: absolute; left: -28px; top: 6px;
+    width: 18px; height: 18px; border-radius: 50%;
+    background: var(--c-white); border: 3px solid var(--c-orange);
+  }
+  .tl-step.muted::before { border-color: var(--c-line); }
+  .tl-step.major::before { background: var(--c-orange); }
+  .tl-step h4 { font-size: 17px; font-weight: 800; line-height: 1.4;
+                margin-bottom: 8px; color: var(--c-text); }
+  .tl-step .tl-meta { font-size: 12px; color: var(--c-mute);
+                      letter-spacing: 2px; font-weight: 700;
+                      margin-bottom: 10px; }
+  .tl-step p { font-size: 15px; line-height: 1.85;
+               color: var(--c-soft); font-weight: 500; }
+
+  /* TABLES */
+  table { width: 100%; border-collapse: collapse;
+          margin-top: 12px; font-size: 15px; }
+  th, td { text-align: left; padding: 12px 16px;
+           border-bottom: 1px solid var(--c-line);
+           vertical-align: middle; line-height: 1.6; }
+  th { font-size: 11px; letter-spacing: 2px; color: var(--c-soft);
+       font-weight: 800; text-transform: uppercase; background: var(--c-gray);
+       white-space: nowrap; }
+  td { color: var(--c-soft); font-weight: 500; }
+  td:first-child { color: var(--c-text); font-weight: 700; }
+  td.score-cell { font-weight: 800; color: var(--c-orange);
+                  text-align: center; font-size: 16px; white-space: nowrap; }
+  tr.alpha td { background: #FFF8F4; }
+  tr.alpha td.score-cell { color: var(--c-orange); }
+  tr.selected td { background: var(--c-text); color: var(--c-white); font-weight: 700; }
+  tr.selected td:first-child { color: var(--c-white); }
+  tr.selected td.score-cell { color: var(--c-orange); }
+
+  /* CORRELATION MATRIX */
+  .matrix-wrap { margin-top: 24px; overflow-x: auto; }
+  table.matrix { font-size: 14px; }
+  table.matrix th, table.matrix td {
+    text-align: center; padding: 10px;
+    white-space: normal; min-width: 80px;
+  }
+  table.matrix td:first-child {
+    text-align: left; white-space: normal;
+    background: var(--c-gray); font-size: 13px;
+  }
+  td.corr-high { background: #FFE8DD; color: var(--c-text); font-weight: 800; }
+  td.corr-mid { background: #FFF4ED; color: var(--c-soft); font-weight: 700; }
+  td.corr-low { background: #F5F5F5; color: var(--c-mute); font-weight: 600; }
+  td.corr-zero { background: #FFFFFF; color: var(--c-mute); font-weight: 500; }
+
+  /* CARDS */
+  .cards-3 {
+    display: grid; grid-template-columns: repeat(3, 1fr);
+    gap: 20px; margin-top: 20px;
+  }
+  .card {
+    border: 1px solid var(--c-line);
+    padding: 28px 28px;
+  }
+  .card.selected {
+    background: var(--c-text); color: var(--c-white);
+    border-color: var(--c-text);
+  }
+  .card .c-num {
+    font-size: 13px; color: var(--c-orange);
+    font-weight: 800; letter-spacing: 2px;
+    margin-bottom: 10px;
+  }
+  .card.selected .c-num { color: var(--c-orange); }
+  .card h4 {
+    font-size: 17px; font-weight: 800;
+    line-height: 1.4; margin-bottom: 14px;
+    color: var(--c-text);
+  }
+  .card.selected h4 { color: var(--c-white); }
+  .card .c-meta {
+    font-size: 13px; line-height: 1.7;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--c-line);
+    margin-bottom: 12px;
+    font-weight: 500;
+  }
+  .card.selected .c-meta {
+    color: #CCCCCC; border-color: #444;
+  }
+  .card .c-reason { font-size: 13px; line-height: 1.7;
+                    font-weight: 500; color: var(--c-soft); }
+  .card.selected .c-reason { color: #DDDDDD; }
+
+  /* CONCLUSION */
+  .conclusion {
+    background: var(--c-gray);
+    border-left: 5px solid var(--c-orange);
+    margin-top: 36px;
+    padding: 32px 36px;
+  }
+  .conclusion .c-label {
+    font-size: 12px; letter-spacing: 6px;
+    color: var(--c-orange); font-weight: 800;
+    margin-bottom: 14px; display: block;
+  }
+  .conclusion .c-label::before { content: "→ "; font-weight: 800; }
+  .conclusion .c-body { font-size: 18px; line-height: 1.75;
+                         color: var(--c-text); font-weight: 700; }
+  .conclusion .c-body .accent { color: var(--c-orange); font-weight: 800; }
+
+  /* CHECKLIST */
+  .checklist { margin-top: 24px; }
+  .check-item {
+    display: grid; grid-template-columns: 32px 1fr;
+    padding: 14px 0; border-bottom: 1px solid var(--c-line);
+    align-items: start;
+  }
+  .check-item .check-mark {
+    color: var(--c-orange); font-size: 18px; font-weight: 800;
+    line-height: 1.5;
+  }
+  .check-item .check-text {
+    font-size: 15px; line-height: 1.7; font-weight: 500;
+    color: var(--c-soft);
+  }
+  .check-item .check-text strong { color: var(--c-text); font-weight: 700; }
+
+  /* DOC FOOT */
+  .foot { margin-top: 96px; padding-top: 36px; border-top: 1px solid var(--c-line);
+          font-size: 13px; color: var(--c-mute); letter-spacing: 0.5px;
+          line-height: 2.0; font-weight: 500; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="hero">
+    <div class="eyebrow">VAIZO ─ V/ENTER WEB STRATEGY ／ ANALYSIS REPORT</div>
+    <h1>業種選定の経緯と判断軸<br>分析レポート</h1>
+    <p class="lead">
+      V/ENTER WEB事業部の初月3業種をどうやって選んだか。検討した代替案、議論で起きた論点の転換、最終的な3業種に至るまでの判断軸とプロセスを、視覚的に整理する。
+    </p>
+    <div class="meta">2026-05-04 ／ 002_営業部 / 01_営業企画・戦略 / 00_議事録</div>
+  </header>
+
+  <section>
+    <div class="num">01</div>
+    <h2>議論の出発点</h2>
+    <p class="h2-sub">何が決まっており、何が未確定だったか</p>
+
+    <p class="body">
+      この議論の出発点は、以下の3点が確定している状態だった。
+    </p>
+
+    <table>
+      <tr><th>項目</th><th>確定内容</th></tr>
+      <tr><td>件数目標</td><td>3業種 × 100件 ＝ 300件・全件送付</td></tr>
+      <tr><td>反応率レンジ</td><td>ロア5％／標準10％／シーリング15％</td></tr>
+      <tr><td>初月受注目標</td><td>4件</td></tr>
+      <tr><td>判断原則</td><td>創業2ヶ月目・期待値の低いことに時間と金を使うのは致命的</td></tr>
+      <tr><td>既存成功事例</td><td>レトロバックページ（仙台国分町・本格料理ダイニングバー・貸切メイン）</td></tr>
+    </table>
+
+    <p class="body" style="margin-top: 18px;">
+      未確定だったのは「**3業種が何か**」。これを決めるための判断軸と業種候補を順に詰めていったのが本議論。
+    </p>
+  </section>
+
+  <section>
+    <div class="num">02</div>
+    <h2>議論のタイムライン</h2>
+    <p class="h2-sub">どこで論点が転換し、どう判断が更新されたか</p>
+
+    <div class="timeline">
+      <div class="tl-step">
+        <div class="tl-meta">STEP 1</div>
+        <h4>業種候補の幅出し（40業種）</h4>
+        <p>飲食×世界観／飲食外×世界観／BtoB×個人事業／観光・体験の4カテゴリで網羅。γ級の初期排除（美容室・整体・士業等）。</p>
+      </div>
+      <div class="tl-step">
+        <div class="tl-meta">STEP 2</div>
+        <h4>評価軸 v1〜v3 の設計</h4>
+        <p>7軸→8軸→9軸へ進化。サイト売上直結度、業種の経済性を独立軸化。スコア20点満点へ拡張。</p>
+      </div>
+      <div class="tl-step">
+        <div class="tl-meta">STEP 3</div>
+        <h4>暫定α級5業種の抽出（v3）</h4>
+        <p>個人写真館・古民家宿・カウンター高単価レストラン・老舗料亭・高単価ダイニングバー等が候補に。</p>
+      </div>
+      <div class="tl-step major">
+        <div class="tl-meta">STEP 4 ─ 論点転換 1</div>
+        <h4>2業種集中 vs 3業種分散の議論</h4>
+        <p>当初Claudeは「期待値最大化のため2業種集中（200/100）」を強く推奨。しかし橋本CEOから「全業種ハズレで初月ゼロ受注なら倒産」の指摘。期待値ではなく生存確率を最優先に。<strong>3業種×100件に確定</strong>。</p>
+      </div>
+      <div class="tl-step">
+        <div class="tl-meta">STEP 5</div>
+        <h4>評価軸 v4 の追加</h4>
+        <p>軸⑩「同価格帯競合の密度」を追加。除外条件（規制リスク・業界団体圧力等）を明文化。10軸20点満点へ。</p>
+      </div>
+      <div class="tl-step major">
+        <div class="tl-meta">STEP 6 ─ 論点転換 2</div>
+        <h4>軸⑩の意味再定義</h4>
+        <p>「専業ベンダー席巻度」では誤解。¥50-100万の医療系メディコム等は別マーケットで競合ではない。<strong>「同価格帯（¥20-50万）の競合密度」に再定義</strong>。高価格専業ベンダーはむしろ顧客育成済みのプラスシグナル。</p>
+      </div>
+      <div class="tl-step major">
+        <div class="tl-meta">STEP 7 ─ 論点転換 3</div>
+        <h4>初期ランキングの判断ミス指摘</h4>
+        <p>橋本CEOから「貸切バー・綺麗なレストラン・居酒屋系は実例が刺さるはず」の指摘。Claudeのランキングは軸スコア数字に引きずられ、<strong>「既存実例の活用可能性」が抜けていた</strong>ことが判明。</p>
+      </div>
+      <div class="tl-step major">
+        <div class="tl-meta">STEP 8 ─ 軸再構成</div>
+        <h4>軸⑧の入れ替え（v4.1）</h4>
+        <p>独立性が低かった軸⑧「反応率期待」を削除（軸⑥に統合）。代わりに<strong>軸⑧「成功事例の活用可能性」を新設</strong>。10軸の総数は維持。</p>
+      </div>
+      <div class="tl-step">
+        <div class="tl-meta">STEP 9 ─ 最終判断</div>
+        <h4>ポートフォリオ理論からの最終調整</h4>
+        <p>「飲食2枠化」案は相関リスクで却下。Claude独立分析として、飲食1枠＋別業界2枠の構成を堅持。実例活用と分散リスクヘッジの両立。</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="num">03</div>
+    <h2>α級11業種の最終採点（v4.1）</h2>
+    <p class="h2-sub">軸⑧「成功事例の活用可能性」を加えての再採点</p>
+
+    <table>
+      <tr><th>順位</th><th>業種</th><th>v4.1スコア</th><th>軸⑧</th><th>V/LISTING</th></tr>
+      <tr class="alpha"><td>1</td><td>カウンター高単価レストラン</td><td class="score-cell">18</td><td>◎</td><td>○</td></tr>
+      <tr class="alpha selected"><td>2</td><td>一棟貸し古民家宿・小規模ヴィラ</td><td class="score-cell">17</td><td>△</td><td>◎</td></tr>
+      <tr class="alpha selected"><td>3</td><td>高単価ダイニングバー（貸切メイン）</td><td class="score-cell">16</td><td>◎</td><td>△</td></tr>
+      <tr class="alpha selected"><td>3</td><td>個人写真館（自費中心特化型）</td><td class="score-cell">16</td><td>△</td><td>◎◎</td></tr>
+      <tr class="alpha"><td>3</td><td>老舗料亭・懐石割烹</td><td class="score-cell">16</td><td>○</td><td>△</td></tr>
+      <tr><td>6</td><td>グランピング施設</td><td class="score-cell">14</td><td>△</td><td>○</td></tr>
+      <tr><td>6</td><td>酒蔵・ワイナリー</td><td class="score-cell">14</td><td>△</td><td>○</td></tr>
+      <tr><td>8</td><td>旅館（個人経営）</td><td class="score-cell">13</td><td>△</td><td>○</td></tr>
+      <tr><td>8</td><td>本格イタリアン／フレンチ</td><td class="score-cell">13</td><td>○</td><td>△</td></tr>
+      <tr><td>10</td><td>ライブハウス／音楽イベント</td><td class="score-cell">12</td><td>○</td><td>△</td></tr>
+      <tr><td>—</td><td>歯科クリニック（自費）</td><td class="score-cell">除外</td><td>—</td><td>—</td></tr>
+    </table>
+
+    <p class="body" style="margin-top: 18px; font-size: 14px;">
+      ※ 黒地の3行が最終選定。スコア最高の<strong>カウンター高単価レストラン（18点）</strong>は飲食相関リスクで業種Cから外し、代わりに完全独立の個人写真館（16点）を採用。
+    </p>
+  </section>
+
+  <section>
+    <div class="num">04</div>
+    <h2>業種ペアの相関リスク分析</h2>
+    <p class="h2-sub">3業種の組み合わせを「全業種ハズレ確率」で評価</p>
+
+    <p class="body">
+      3業種に分散する目的は「全業種ハズレで初月ゼロ受注を回避」すること。これが効くのは業種間の<strong>成功・失敗が独立している</strong>場合のみ。同業界に2枠を置くと相関が高くなり、分散効果が半減する。
+    </p>
+
+    <h3>業種ペアの相関マトリクス</h3>
+    <div class="matrix-wrap">
+      <table class="matrix">
+        <tr>
+          <th></th>
+          <th>高単価ダイニングバー</th>
+          <th>カウンター高単価レストラン</th>
+          <th>古民家宿</th>
+          <th>個人写真館</th>
+        </tr>
+        <tr>
+          <td>高単価ダイニングバー</td>
+          <td class="corr-zero">—</td>
+          <td class="corr-high">高</td>
+          <td class="corr-low">低</td>
+          <td class="corr-zero">ほぼゼロ</td>
+        </tr>
+        <tr>
+          <td>カウンター高単価レストラン</td>
+          <td class="corr-high">高</td>
+          <td class="corr-zero">—</td>
+          <td class="corr-low">低</td>
+          <td class="corr-zero">ほぼゼロ</td>
+        </tr>
+        <tr>
+          <td>古民家宿</td>
+          <td class="corr-low">低</td>
+          <td class="corr-low">低</td>
+          <td class="corr-zero">—</td>
+          <td class="corr-low">低</td>
+        </tr>
+        <tr>
+          <td>個人写真館</td>
+          <td class="corr-zero">ほぼゼロ</td>
+          <td class="corr-zero">ほぼゼロ</td>
+          <td class="corr-low">低</td>
+          <td class="corr-zero">—</td>
+        </tr>
+      </table>
+    </div>
+
+    <h3>3業種ポートフォリオ案の比較</h3>
+    <table>
+      <tr><th>ポートフォリオ案</th><th>業種スコア合計</th><th>相関リスク</th><th>判定</th></tr>
+      <tr><td>カウンター + ダイニングバー + 古民家宿</td><td>51点</td><td>飲食2枠で高</td><td>不採用</td></tr>
+      <tr><td>カウンター + 古民家宿 + 写真館</td><td>50点</td><td>低（飲食1枠）</td><td>候補</td></tr>
+      <tr class="selected"><td>ダイニングバー + 古民家宿 + 写真館</td><td>49点</td><td>低（飲食1枠）</td><td>採用</td></tr>
+      <tr><td>ダイニングバー + 老舗料亭 + 古民家宿</td><td>49点</td><td>飲食2枠で高</td><td>不採用</td></tr>
+    </table>
+
+    <p class="body" style="margin-top: 18px; font-size: 14px;">
+      ※ スコア最高ポートフォリオ（カウンター+古民家宿+写真館）ではなく、実例直系の高単価ダイニングバー（貸切）を業種Aとする組み合わせを採用。実例活用の質を最優先。
+    </p>
+  </section>
+
+  <section>
+    <div class="num">05</div>
+    <h2>暫定3業種の確定</h2>
+    <p class="h2-sub">実例活用 ＋ 分散 ＋ LTV最大化 の3条件を同時達成</p>
+
+    <div class="cards-3">
+      <div class="card selected">
+        <div class="c-num">業種A</div>
+        <h4>高単価ダイニングバー（貸切メイン）</h4>
+        <div class="c-meta">業種スコア 16点<br>客単5,000-10,000円<br>個室付き本格居酒屋・専門バー含む</div>
+        <div class="c-reason"><strong style="color:#FFFFFF;">役割：実例直系</strong><br>レトロバックページ完全直系。訴求テンプレ・営業スクリプト・デモパターンがそのまま流用可能。</div>
+      </div>
+      <div class="card selected">
+        <div class="c-num">業種B</div>
+        <h4>一棟貸し古民家宿・小規模ヴィラ</h4>
+        <div class="c-meta">業種スコア 17点（最高）<br>客単3-10万円/泊<br>V/LISTING可能性 ◎</div>
+        <div class="c-reason"><strong style="color:#FFFFFF;">役割：別業界の最高スコア枠</strong><br>業種スコア最高。インバウンド成長カテゴリ。完全別業界で相関ゼロ。</div>
+      </div>
+      <div class="card selected">
+        <div class="c-num">業種C</div>
+        <h4>個人写真館（自費中心特化型）</h4>
+        <div class="c-meta">業種スコア 16点<br>七五三・成人式・ブライダル特化<br>V/LISTING可能性 ◎◎</div>
+        <div class="c-reason"><strong style="color:#FFFFFF;">役割：完全独立軸・LTV最大化枠</strong><br>V/LISTINGクロスセル可能性最強。完全独立業界。LTV倍増の核。</div>
+      </div>
+    </div>
+
+    <h3>3条件の達成チェック</h3>
+    <div class="checklist">
+      <div class="check-item">
+        <div class="check-mark">✓</div>
+        <div class="check-text"><strong>実例活用</strong>：業種Aがレトロバックページ直系。訴求テンプレ流用で初月の立ち上がり空振りリスクを下げる。</div>
+      </div>
+      <div class="check-item">
+        <div class="check-mark">✓</div>
+        <div class="check-text"><strong>分散リスクヘッジ</strong>：飲食1枠＋宿泊1枠＋写真館1枠で相関ゼロ。全業種ハズレ確率12.5%（2業種集中なら25%）。</div>
+      </div>
+      <div class="check-item">
+        <div class="check-mark">✓</div>
+        <div class="check-text"><strong>LTV最大化</strong>：業種CのV/LISTING可能性◎◎で月次クロスセル契約獲得余地。1社年間¥56-90万LTV。</div>
+      </div>
+      <div class="check-item">
+        <div class="check-mark">✓</div>
+        <div class="check-text"><strong>業種スコアα級</strong>：3業種すべて16点以上（α級）。期待値の低い業種は1つも入らない。</div>
+      </div>
+      <div class="check-item">
+        <div class="check-mark">✓</div>
+        <div class="check-text"><strong>母集団確保</strong>：3業種すべて仙台＋東北＋東京で100件以上のS級候補が確保可能。</div>
+      </div>
+    </div>
+
+    <div class="conclusion">
+      <span class="c-label">暫定確定</span>
+      <div class="c-body">
+        業種A：<span class="accent">高単価ダイニングバー（貸切メイン）</span><br>
+        業種B：<span class="accent">一棟貸し古民家宿・小規模ヴィラ</span><br>
+        業種C：<span class="accent">個人写真館（自費中心特化型）</span>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="num">06</div>
+    <h2>残る論点・次の議論</h2>
+
+    <table>
+      <tr><th>論点</th><th>対応方針</th></tr>
+      <tr><td>業種A・Bの母集団100件確保の物理検証</td><td>Google Maps・業界DB・ぐるなび等で実数カウント</td></tr>
+      <tr><td>各業種10件のミニ調査</td><td>サイト古さ率・個人経営率を実地確認</td></tr>
+      <tr><td>業種別文面・デモテンプレ・電話スクリプト整備</td><td>業種A→業種B→業種Cの順で準備（実例活用順）</td></tr>
+      <tr><td>居酒屋サブセグメントの定義精緻化</td><td>業種A定義に内包する「個室付き本格居酒屋・専門バー」の店舗判定基準を詰める</td></tr>
+      <tr><td>週次ピボット判断ポイントの運用</td><td>第2-3週の業種別反応率で配分組み替え判断</td></tr>
+      <tr><td>業種選定基準 v4.1 の検証</td><td>実営業データを蓄積し四半期ごとに見直し</td></tr>
+    </table>
+  </section>
+
+  <div class="foot">
+    関連Doc：V_ENTER_業種選定_期待値スクリーニング基準 v4.1／V_ENTER_ターゲティング基準書 v4／V_ENTER戦略前提_Web刷新×検索広告クロスセル戦略／V_ENTER_ターゲティングの考え方（Strategy Summary HTML）<br>
+    記録：Claude／橋本 友太郎　2026-05-04
+  </div>
+
+</div>
+</body>
+</html>
